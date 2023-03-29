@@ -2,12 +2,11 @@ package tcpclient;
 
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
 
 public class TTPTCPClient {
 
-    private static final String DEFAULT_SERVER_ADDRESS = "localhost";
-    private static final int DEFAULT_SERVER_PORT = 9000;
+    private static final String DEFAULT_SERVER_ADDRESS = "127.0.0.1";
+    private static final int DEFAULT_SERVER_PORT = 9222;
     private static final int BUFFER_SIZE = 512;
 
     public static void main(String[] args) {
@@ -18,24 +17,24 @@ public class TTPTCPClient {
              DataInputStream in = new DataInputStream(socket.getInputStream());
              DataOutputStream out = new DataOutputStream(socket.getOutputStream())) {
 
-            Scanner scanner = new Scanner(System.in);
-
+            // Read the user inputs to choose which operation to execute
+            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
             while (true) {
-                System.out.print("Enter command (RRQ/WRQ/exit): ");
-                String command = scanner.nextLine().trim();
-                if ("exit".equalsIgnoreCase(command)) {
+                System.out.print("\n1 to send a file \n2 to retrieve a file \n3 to exit\n:");
+                String command = stdIn.readLine().trim();
+                // The while loop will keep running until the user enters "3" to exit
+                if ("3".equals(command)) {
                     break;
                 }
+                System.out.print("Enter the filename: ");
+                String filename = stdIn.readLine().trim();
 
-                System.out.print("Enter filename: ");
-                String filename = scanner.nextLine().trim();
-
-                if ("RRQ".equalsIgnoreCase(command)) {
-                    sendRequest(out, "RRQ", filename);
-                    receiveFile(in, filename);
-                } else if ("WRQ".equalsIgnoreCase(command)) {
+                if ("1".equals(command)) {
                     sendRequest(out, "WRQ", filename);
                     sendFile(out, filename);
+                } else if ("2".equals(command)) {
+                    sendRequest(out, "RRQ", filename);
+                    receiveFile(in, filename);
                 } else {
                     System.out.println("Invalid command");
                 }
